@@ -43,7 +43,7 @@ R & T\\
 
 ### 3 Pose estimation
 
-<img src = "https://github.com/ge35tay/AR_Marker_and_Voxel_Carving/raw/HaifanZhang/InputData/ArUcoBoard2.png" width = 50%/><img src = "https://github.com/ge35tay/AR_Marker_and_Voxel_Carving/raw/HaifanZhang/OutputData/axes_ArUcoBoard2.png" width = 50%/>
+<img src = "https://github.com/ge35tay/AR_Marker_and_Voxel_Carving/raw/HaifanZhang/InputData/ArUcoBoard2.jpg" width = 50%/><img src = "https://github.com/ge35tay/AR_Marker_and_Voxel_Carving/raw/HaifanZhang/OutputData/axes_ArUcoBoard2.png" width = 50%/>
 <center style="font-size:14px;color:#C0C0C0">left: raw image, right: getImageWithAxes()</center>
 
 You can see more data in `InputData` and `OutputData` folder.
