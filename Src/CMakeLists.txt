@@ -6,8 +6,8 @@ include_directories( ${OpenCV_INCLUDE_DIRS} )
 include(CTest)
 enable_testing()
 set(HEADERS
-        cameraView.h
-        )
+        singleImage.h
+        multiImage.h)
 
 set(SOURCES
         main.cpp
