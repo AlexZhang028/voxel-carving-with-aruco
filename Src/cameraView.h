@@ -18,12 +18,10 @@ public:
         dictionary = cv::Ptr<cv::aruco::Dictionary>(&dictionaryTemp);
         board = cv::aruco::GridBoard::create(5,7,0.1,0.01,dictionaryTemp);
         cv::aruco::detectMarkers(image, dictionary, corners, ids);
-        markerCounterPerFrame.reserve(1);
-        markerCounterPerFrame.push_back(corners.size());
-        repError = cv::aruco::calibrateCameraAruco(
-                corners, ids, markerCounterPerFrame, board,
-                image.size(), intrinsicMatrix, distCoeffs,
-                rvecs, tvecs, calibrationFlags);
+        calibrateCamera();
+        image = getUndistortedImage(); // distortion calibration, all works on calibrated image
+        cv::aruco::detectMarkers(image, dictionary, corners, ids); // detect markers on calibrated image
+        calibrateCamera(); // get new intrinsic matrix and estimated pose
     }
 
     cv::Mat getImageWithMarker() {
@@ -33,10 +31,20 @@ public:
         return imageCopy;
     }
 
-    cv::Mat getUndistortedImage() {
+    cv::Mat getCameraPose() {
+        cv::Mat cameraPose;
+        cv::Mat lastLine = (cv::Mat_<double>(1,4) << 0, 0, 0, 1);
+        cv::Mat rotationMatrix;
+        cv::Rodrigues(rvecs[0], rotationMatrix);
+        cv::hconcat(rotationMatrix, tvecs[0], cameraPose);
+        cv::vconcat(cameraPose,lastLine, cameraPose);
+        return cameraPose;
+    }
+
+    cv::Mat getImageWithAxes() {
         cv::Mat imageCopy;
         image.copyTo(imageCopy);
-        cv::undistort(image,imageCopy,intrinsicMatrix, distCoeffs);
+        cv::drawFrameAxes(imageCopy,intrinsicMatrix, distCoeffs, rvecs[0], tvecs[0],0.3, 10);
         return imageCopy;
     }
 
@@ -48,4 +56,21 @@ private:
     std::vector<std::vector<cv::Point2f>> corners;
     std::vector<int> markerCounterPerFrame;
     int calibrationFlags = 0;
+
+    void calibrateCamera() {
+        markerCounterPerFrame = {};
+        markerCounterPerFrame.reserve(1);
+        markerCounterPerFrame.push_back(corners.size());
+        repError = cv::aruco::calibrateCameraAruco(
+                corners, ids, markerCounterPerFrame, board,
+                image.size(), intrinsicMatrix, distCoeffs,
+                rvecs, tvecs, calibrationFlags);
+    }
+
+    cv::Mat getUndistortedImage() {
+        cv::Mat imageCopy;
+        image.copyTo(imageCopy);
+        cv::undistort(image,imageCopy,intrinsicMatrix, distCoeffs);
+        return imageCopy;
+    }
 };

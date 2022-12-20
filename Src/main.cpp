@@ -17,17 +17,24 @@ int main()
     CameraView markerBoard2(inputDataDir + "ArUcoBoard2.jpg");
 
     // saving undistorted image with marker detection
-    cv::imwrite(outputDataDir + "out_distortionTest1.png",
+    cv::imwrite(outputDataDir + "marker_distortionTest1.png",
                 distortionTest1.getImageWithMarker());
-    cv::imwrite(outputDataDir + "out_distortionTest2.png",
+    cv::imwrite(outputDataDir + "marker_distortionTest2.png",
                 distortionTest2.getImageWithMarker());
-    cv::imwrite(outputDataDir + "out_ArUcoBoard1.png",
+    cv::imwrite(outputDataDir + "marker_ArUcoBoard1.png",
                 markerBoard1.getImageWithMarker());
-    cv::imwrite(outputDataDir + "out_ArUcoBoard2.png",
+    cv::imwrite(outputDataDir + "marker_ArUcoBoard2.png",
                 markerBoard2.getImageWithMarker());
-    cv::imwrite(outputDataDir + "calibrated1.png",
-                distortionTest1.getUndistortedImage());
-    cv::imwrite(outputDataDir + "calibrated2.png",
-                distortionTest2.getUndistortedImage());
+
+    // saving image with world frame
+    cv::imwrite(outputDataDir + "axes_distortionTest1.png",
+                distortionTest1.getImageWithAxes());
+    cv::imwrite(outputDataDir + "axes_distortionTest2.png",
+                distortionTest2.getImageWithAxes());
+    cv::imwrite(outputDataDir + "axes_ArUcoBoard1.png",
+                markerBoard1.getImageWithAxes());
+    cv::imwrite(outputDataDir + "axes_ArUcoBoard2.png",
+                markerBoard2.getImageWithAxes());
+
     return 0;
 }
