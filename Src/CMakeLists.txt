@@ -1,0 +1,23 @@
+cmake_minimum_required(VERSION 3.0.0)
+project(ArMarker VERSION 0.1.0)
+set (OpenCV_DIR "C:/3D-Scanning/FinalProject/Lib/opencv/")
+find_package( OpenCV REQUIRED )
+include_directories( ${OpenCV_INCLUDE_DIRS} )
+include(CTest)
+enable_testing()
+set(HEADERS
+        cameraView.h
+        )
+
+set(SOURCES
+        main.cpp
+        )
+
+add_executable(ArMarker ${HEADERS} ${SOURCES})
+
+target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS})
+set(CPACK_PROJECT_NAME ${PROJECT_NAME})
+set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
+set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}")
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}")
+include(CPack)
