@@ -67,7 +67,7 @@ Class `MultiImage` takes an input of file name list and calibrate the camera bas
 <img src = "https://github.com/ge35tay/AR_Marker_and_Voxel_Carving/raw/HaifanZhang/InputData/1.jpg" width = 50%/><img src = "https://github.com/ge35tay/AR_Marker_and_Voxel_Carving/raw/HaifanZhang/OutputData/1.png" width = 50%/>
 <center style="font-size:14px;color:#C0C0C0">left: raw image, right: getImageWithAxes()</center>
 
-<img src = "https://github.com/ge35tay/AR_Marker_and_Voxel_Carving/raw/HaifanZhang/OnputData/single_1.png" width = 50%/><img src = "https://github.com/ge35tay/AR_Marker_and_Voxel_Carving/raw/HaifanZhang/OutputData/1.png" width = 50%/>
+<img src = "https://github.com/ge35tay/AR_Marker_and_Voxel_Carving/raw/HaifanZhang/OutputData/single_1.png" width = 50%/><img src = "https://github.com/ge35tay/AR_Marker_and_Voxel_Carving/raw/HaifanZhang/OutputData/1.png" width = 50%/>
 <center style="font-size:14px;color:#C0C0C0">left: estimation with sigle image, right: estimation with multiple images</center>
 
 You can see more data in `InputData` and `OutputData` folder.
