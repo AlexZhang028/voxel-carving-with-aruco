@@ -81,7 +81,7 @@ You can see more data in `InputData` and `OutputData` folder.
 
 ### 5 Background extraction
 
-<img src = "https://github.com/ge35tay/AR_Marker_and_Voxel_Carving/raw/HaifanZhang/DetaSet_Old/image_5.jpg" width = 50%/><img src = "https://github.com/ge35tay/AR_Marker_and_Voxel_Carving/raw/HaifanZhang/DetaSet_Old/Processed/image_5.jpg" width = 50%/>
+<img src = "https://github.com/ge35tay/AR_Marker_and_Voxel_Carving/raw/HaifanZhang/DataSet_Old/image_5.jpg" width = 50%/><img src = "https://github.com/ge35tay/AR_Marker_and_Voxel_Carving/raw/HaifanZhang/DataSet_Old/Processed/image_5.jpg" width = 50%/>
 <center style="font-size:14px;color:#C0C0C0">left: original image, right: background removed</center>
 
 But intesection of the object and arUco Board causes trouble
