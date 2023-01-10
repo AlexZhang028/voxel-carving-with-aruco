@@ -8,13 +8,13 @@
 class MultiImage{
 public:
     std::vector<cv::Mat> images, rvecs, tvecs;
-    cv::Mat intrinsicMatrix, distCoeffs;
+    cv::Mat intrinsicMatrix, distCoeffs, stdDeviationsIntrinsics, stdDeviationsExtrinsics, perViewErrors;
     double repError;
 
     MultiImage(std::vector<std::string> fileNames) {
         dictionaryTemp = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
         dictionary = cv::Ptr<cv::aruco::Dictionary>(&dictionaryTemp);
-        board = cv::aruco::GridBoard::create(5,7,0.1,0.01,dictionaryTemp);
+        cv::Ptr<cv::aruco::GridBoard> board = new cv::aruco::GridBoard(cv::Size(5,7),0.1,0.01,dictionaryTemp);
         for (int i = 0; i < fileNames.size(); i++) {
             images.push_back(cv::imread(fileNames[i]));
             cv::aruco::detectMarkers(images[i], dictionary, corners, ids);
@@ -31,7 +31,7 @@ public:
         repError = cv::aruco::calibrateCameraAruco(
                 allCornersConcatenated, allIdsConcatenated, markerCounterPerFrame, board,
                 images[0].size(), intrinsicMatrix, distCoeffs,
-                rvecs, tvecs, calibrationFlags);
+                rvecs, tvecs,stdDeviationsIntrinsics, stdDeviationsExtrinsics, perViewErrors, calibrationFlags);
     }
 
     cv::Mat getImageWithMarker(int index) {
@@ -51,7 +51,7 @@ public:
 private:
     cv::aruco::Dictionary dictionaryTemp;
     cv::Ptr<cv::aruco::Dictionary> dictionary;
-    cv::Ptr<cv::aruco::GridBoard> board;
+//    cv::Ptr<cv::aruco::GridBoard> board;
     std::vector<int> ids, markerCounterPerFrame, allIdsConcatenated;
     std::vector<std::vector<cv::Point2f>> corners, allCornersConcatenated;
     std::vector<std::vector<std::vector<cv::Point2f>>> allCorners;

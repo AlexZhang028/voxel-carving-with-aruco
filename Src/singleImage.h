@@ -16,7 +16,7 @@ public:
         image = cv::imread(imagePath);
         dictionaryTemp = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
         dictionary = cv::Ptr<cv::aruco::Dictionary>(&dictionaryTemp);
-        board = cv::aruco::GridBoard::create(5,7,0.1,0.01,dictionaryTemp);
+        cv::Ptr<cv::aruco::GridBoard> board = new cv::aruco::GridBoard(cv::Size(5,7),0.1,0.01,dictionaryTemp);
         cv::aruco::detectMarkers(image, dictionary, corners, ids);
         calibrateCamera();
 //        image = getUndistortedImage(); // distortion calibration, all works on calibrated image

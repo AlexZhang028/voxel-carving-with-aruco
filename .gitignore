@@ -1,4 +1,5 @@
 /Lib
+/Libs
 /.vscode
 /Src/*build*
 /Src/.*

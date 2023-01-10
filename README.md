@@ -5,7 +5,8 @@
 - Marker detection ✔
 - Camera calibration on sigle image ✔
 - Distortion fix ✔
-- Camera pose estimation ✔ (?)
+- Camera pose estimation ✔
+- Background extraction ✔
 
 ## Class `SingleImage` (not in use)
 
@@ -44,6 +45,12 @@ Class `MultiImage` takes an input of file name list and calibrate the camera bas
 `getImageWithMarker(index)`: returns image and highlights all detected marks on it.
 
 `getImageWithAxes(index)`: returns image and draws world frame onit.
+
+## Build target "foreground"
+
+removes background of images in /DataSet_Old with function `cv::grabCut()`
+
+fixed and pre-defined bounding box 
 
 ## Example pictures
 

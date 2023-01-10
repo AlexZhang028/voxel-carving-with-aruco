@@ -10,8 +10,8 @@
 int main()
 {
 
-    std::string inputDataDir = "c:/3D-Scanning/FinalProject/InputData/";
-    std::string outputDataDir = "c:/3D-Scanning/FinalProject/OutputData/";
+    std::string inputDataDir = "e:/documents/3D-Scanning/InputData/";
+    std::string outputDataDir = "e:/documents/3D-Scanning/OutputData/";
     std::vector<std::string> fileNames;
     for (int i = 0; i <= 2; i++){
         fileNames.push_back(inputDataDir + std::to_string(i + 1) + ".jpg");
