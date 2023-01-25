@@ -17,13 +17,14 @@ int main()
         fileNames.push_back(inputDataDir + std::to_string(i + 1) + ".jpg");
     }
     MultiImage test(fileNames);
+    test.getCameraPose();
     for (size_t i = 0; i < fileNames.size(); i++) {
-        cv::namedWindow(std::to_string(i), cv::WINDOW_KEEPRATIO);
-        cv::imshow(std::to_string(i), test.getImageWithAxes(i));
-        cv::imwrite(outputDataDir + std::to_string(i + 1) + ".png", test.getImageWithAxes(i));
+//        cv::namedWindow(std::to_string(i), cv::WINDOW_KEEPRATIO);
+//        cv::imshow(std::to_string(i), test.getImageWithAxes(i));
+//        cv::imwrite(outputDataDir + std::to_string(i + 1) + ".png", test.getImageWithAxes(i));
+        std::cout<<test.cameraPoses[i]<<std::endl;
     }
-    SingleImage testSingle(inputDataDir + "1.jpg");
-    cv::imwrite(outputDataDir + "single_1.png", testSingle.getImageWithAxes());
-    cv::waitKey(0);
+
+
     return 0;
 }

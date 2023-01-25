@@ -3,3 +3,4 @@
 /.vscode
 /Src/*build*
 /Src/.*
+/OutputData/*.off

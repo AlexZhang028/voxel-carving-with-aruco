@@ -7,7 +7,7 @@
 
 class MultiImage{
 public:
-    std::vector<cv::Mat> images, rvecs, tvecs;
+    std::vector<cv::Mat> images, rvecs, tvecs, cameraPoses;
     cv::Mat intrinsicMatrix, distCoeffs, stdDeviationsIntrinsics, stdDeviationsExtrinsics, perViewErrors;
     double repError;
 
@@ -46,6 +46,18 @@ public:
         images[index].copyTo(imageCopy);
         cv::drawFrameAxes(imageCopy,intrinsicMatrix, distCoeffs, rvecs[index], tvecs[index],0.3, 10);
         return imageCopy;
+    }
+
+    void getCameraPose() {
+        for (int i = 0; i < images.size(); i++){
+            cv::Mat cameraPose;
+            cv::Mat lastLine = (cv::Mat_<double>(1,4) << 0, 0, 0, 1);
+            cv::Mat rotationMatrix;
+            cv::Rodrigues(rvecs[i], rotationMatrix);
+            cv::hconcat(rotationMatrix, tvecs[0], cameraPose);
+            cv::vconcat(cameraPose,lastLine, cameraPose);
+            cameraPoses.push_back(cameraPose);
+        }
     }
 
 private:
