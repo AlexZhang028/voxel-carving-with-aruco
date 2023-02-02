@@ -10,11 +10,12 @@ public:
     std::vector<cv::Mat> images, rvecs, tvecs, cameraPoses;
     cv::Mat intrinsicMatrix, distCoeffs, stdDeviationsIntrinsics, stdDeviationsExtrinsics, perViewErrors;
     double repError;
+    cv::Ptr<cv::aruco::GridBoard> board;
 
     MultiImage(std::vector<std::string> fileNames) {
         dictionaryTemp = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
         dictionary = cv::Ptr<cv::aruco::Dictionary>(&dictionaryTemp);
-        cv::Ptr<cv::aruco::GridBoard> board = new cv::aruco::GridBoard(cv::Size(5,7),0.1,0.01,dictionaryTemp);
+        board = new cv::aruco::GridBoard(cv::Size(5,7),0.035,0.005,dictionaryTemp);
         for (int i = 0; i < fileNames.size(); i++) {
             images.push_back(cv::imread(fileNames[i]));
             cv::aruco::detectMarkers(images[i], dictionary, corners, ids);
@@ -41,6 +42,10 @@ public:
         return imageCopy;
     }
 
+    void drawArUcoBoard(cv::Mat boardImage) {
+        board->generateImage( cv::Size(1400, 1900), boardImage, 10, 1 );
+    }
+
     cv::Mat getImageWithAxes(int index) {
         cv::Mat imageCopy;
         images[index].copyTo(imageCopy);
@@ -63,7 +68,6 @@ public:
 private:
     cv::aruco::Dictionary dictionaryTemp;
     cv::Ptr<cv::aruco::Dictionary> dictionary;
-//    cv::Ptr<cv::aruco::GridBoard> board;
     std::vector<int> ids, markerCounterPerFrame, allIdsConcatenated;
     std::vector<std::vector<cv::Point2f>> corners, allCornersConcatenated;
     std::vector<std::vector<std::vector<cv::Point2f>>> allCorners;

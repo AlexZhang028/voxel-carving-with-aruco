@@ -12,19 +12,24 @@ int main()
 
     std::string inputDataDir = "e:/documents/3D-Scanning/InputData/";
     std::string outputDataDir = "e:/documents/3D-Scanning/OutputData/";
-    std::vector<std::string> fileNames;
-    for (int i = 0; i <= 2; i++){
-        fileNames.push_back(inputDataDir + std::to_string(i + 1) + ".jpg");
-    }
-    MultiImage test(fileNames);
-    test.getCameraPose();
-    for (size_t i = 0; i < fileNames.size(); i++) {
+//    std::vector<std::string> fileNames;
+//    for (int i = 0; i <= 2; i++){
+//        fileNames.push_back(inputDataDir + std::to_string(i + 1) + ".jpg");
+//    }
+//    MultiImage test(fileNames);
+//    test.getCameraPose();
+//    for (size_t i = 0; i < fileNames.size(); i++) {
 //        cv::namedWindow(std::to_string(i), cv::WINDOW_KEEPRATIO);
 //        cv::imshow(std::to_string(i), test.getImageWithAxes(i));
 //        cv::imwrite(outputDataDir + std::to_string(i + 1) + ".png", test.getImageWithAxes(i));
-        std::cout<<test.cameraPoses[i]<<std::endl;
-    }
-
-
+//        std::cout<<test.cameraPoses[i]<<std::endl;
+//    }
+//    cv::Mat boardImage;
+//    test.board->generateImage( cv::Size(1200, 1600), boardImage, 10, 1 );
+//    cv::imshow("test",boardImage);
+//    cv::imwrite(outputDataDir + "board1.png", boardImage);
+    SingleImage test(outputDataDir + "board1.png");
+    std::cout<<test.getCameraPose()<<std::endl;
+    cv::imwrite(outputDataDir + "board1_axes.png",test.getImageWithAxes());
     return 0;
 }
