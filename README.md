@@ -63,28 +63,6 @@ After initialize the class, the silhouette and projection matrix are automatical
 
 `cv::Mat getImageWithAxes(int index)`: returns an image and draws world frame onit. (only for debugging)
 
-## `singleImage.h` (not in use, only use MultiImage)
-
-Class `SingleImage` need an input parameter `imagePath` and automatically detect all markers and calibrate camera. 
-
-### Public variables
-
-`image`: input image.
-
-`intrinsicMatrix, distCoeffs, rvecs, tvecs` and `repError` store all the information gained during calibration process.
-
-### Public methods
-
-`getImageWithMarker()`: returns calibrated image and highlights all detected marks on it.
-
-`getImageWithAxes()`: returns calibrated image and draws world frame onit.
-
-`getCameraPose()`: returns pose matrix of camera:
-$$\left[\begin{array}{cc}
-R & T\\
-0 & 1
-\end{array}\right]$$
-
 ## `voxel.h`
 
 Contains the Class `Voxel`, which voxelize the space for carving and visulization.
@@ -151,3 +129,26 @@ This function does the carving process with input of silhouettes and projection 
 - `int threshold`: controls the color consistency of a point in 2 images.
 This function retrieves the color information from original input images.
 
+---
+
+## `singleImage.h` (not in use, only use MultiImage)
+
+Class `SingleImage` need an input parameter `imagePath` and automatically detect all markers and calibrate camera. 
+
+### Public variables
+
+`image`: input image.
+
+`intrinsicMatrix, distCoeffs, rvecs, tvecs` and `repError` store all the information gained during calibration process.
+
+### Public methods
+
+`getImageWithMarker()`: returns calibrated image and highlights all detected marks on it.
+
+`getImageWithAxes()`: returns calibrated image and draws world frame onit.
+
+`getCameraPose()`: returns pose matrix of camera:
+$$\left[\begin{array}{cc}
+R & T\\
+0 & 1
+\end{array}\right]$$
