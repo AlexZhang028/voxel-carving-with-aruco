@@ -16,19 +16,12 @@ set(HEADERS
 
 set(SOURCES
         main.cpp
-        foreground.cpp
-        voxel.cpp
         )
 
 add_executable(ArUco ${HEADERS} main.cpp)
-add_executable(foreground ${HEADERS} foreground.cpp)
-add_executable(voxel ${HEADERS} voxel.cpp)
 
 target_link_libraries(ArUco ${OpenCV_LIBS})
-target_link_libraries(foreground ${OpenCV_LIBS})
 target_link_libraries(ArUco Eigen3::Eigen)
-target_link_libraries(voxel Eigen3::Eigen)
-target_link_libraries(voxel ${OpenCV_LIBS})
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}")
