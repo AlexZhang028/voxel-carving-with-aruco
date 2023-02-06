@@ -13,6 +13,11 @@
 
 ## Result
 
+<div align=center>
+  <img src=https://github.com/ge35tay/AR_Marker_and_Voxel_Carving/blob/HaifanZhang/InputData/board02-png-22/01.png width = 50%><img src=https://github.com/ge35tay/AR_Marker_and_Voxel_Carving/blob/HaifanZhang/OutputData/board02-png-22/Result_thres3_iter0.png width = 50%>
+  <p>left: one of the input images; right: output 3D model</p>
+</div>
+
 ## Build project
 
 ### Requirments
