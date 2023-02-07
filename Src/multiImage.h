@@ -11,8 +11,7 @@ public:
     std::vector<cv::Mat> images, cameraPoses, silhouettes, foregrounds, p_Matrices;
 
     // Marker detection, camera calibration while creating the class
-    MultiImage(std::vector<std::string> fileNames, int dilateIteration) {
-        iteration = dilateIteration;
+    MultiImage(std::vector<std::string> fileNames, int erodeIter, int dilateIter, cv::Scalar hsv_min, cv::Scalar hsv_max) {
         dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
         board = new cv::aruco::GridBoard(cv::Size(5,7),0.035,0.005,dictionary);
         cv::aruco::ArucoDetector detector(dictionary, detectorParams);
@@ -34,7 +33,7 @@ public:
                 images[0].size(), intrinsicMatrix, distCoeffs,
                 rvecs, tvecs,stdDeviationsIntrinsics, stdDeviationsExtrinsics, perViewErrors, calibrationFlags);
         getProjectionMatrices();
-        getSilhouettes();
+        getSilhouettes(erodeIter, dilateIter, hsv_min, hsv_max);
     }
 
     cv::Mat getImageWithMarker(int index) {
@@ -75,7 +74,6 @@ private:
     cv::Mat intrinsicMatrix, distCoeffs, stdDeviationsIntrinsics, stdDeviationsExtrinsics, perViewErrors;
     double repError;
     int calibrationFlags = 0;
-    int iteration;
 
     void getProjectionMatrices() {
         for (int i = 0; i < images.size(); i++){
@@ -91,13 +89,14 @@ private:
         }
     }
 
-    void getSilhouettes() {
+    void getSilhouettes(int erodeIter, int dilateIter, cv::Scalar hsv_min, cv::Scalar hsv_max) {
         cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT,cv::Size(3,3));
         for (int i = 0; i < images.size(); i++) {
-            cv::Mat hsv, mask, silhouette;
+            cv::Mat hsv, mask, erode, silhouette;
             cv::cvtColor(images[i], hsv, cv::COLOR_BGR2HSV);
-            cv::inRange(hsv, cv::Scalar(0,100,100), cv::Scalar(180,255,255),mask);
-            cv::dilate(mask,silhouette, kernel, cv::Point(-1,-1),iteration);
+            cv::inRange(hsv, hsv_min, hsv_max,mask);
+            cv::erode(mask,erode, kernel, cv::Point(-1,-1),erodeIter);
+            cv::dilate(erode,silhouette, kernel, cv::Point(-1,-1),dilateIter);
             silhouettes.push_back(silhouette);
         }
     }

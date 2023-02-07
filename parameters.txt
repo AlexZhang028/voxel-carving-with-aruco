@@ -1,0 +1,19 @@
+Ear pods:
+hsv_min = (0,100,100)
+hsv_max = (180,255,255)
+erodeIter = 0
+dilateIter = 0
+startPoint = (0.067,0.095,-0.033)
+endPoint = (0.125,0.177,0.003)
+
+---
+
+stone:
+hsv_min = (0,0,16)
+hsv_max = (177,100,136)
+erodeIter = 0
+dilateIter = 1
+startPoint = (0.0626,0.1118,-0.0388)
+endPoint = (0.1190,0.1598,0)
+
+---

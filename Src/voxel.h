@@ -8,28 +8,39 @@
 #include <iostream>
 #include <fstream>
 
-class Voxel{
+class Voxel {
 public:
     int n_pointWithColor = 0;
     int n_centerPoints = 0;
     int n_vertices = 0;
     int n_faces = 0;
+    std::vector<cv::Mat> images, silhouettes, projectionMatrices;
 
-    Voxel(std::vector<Eigen::Vector3d> centerPoints_input, double size_x_input, double size_y_input, double size_z_input) {
+    Voxel(std::vector<Eigen::Vector3d> centerPoints_input, double size_x_input, double size_y_input,
+          double size_z_input) {
         size_x = size_x_input;
         size_y = size_y_input;
         size_z = size_z_input;
         centerPoints = centerPoints_input;
     }
+
     // n_x: number of voxels in x direction, size_x: size of a single voxel in x direction (length)
-    Voxel(int n_x, int n_y, int n_z, Eigen::Vector3d startPoint, Eigen::Vector3d endPoint) {
+    Voxel(int n_x, int n_y, int n_z,
+          Eigen::Vector3d startPoint, Eigen::Vector3d endPoint,
+          std::vector<cv::Mat> images_input,
+          std::vector<cv::Mat> silhouettes_input,
+          std::vector<cv::Mat> p_Matrices_input) {
+        images = images_input;
+        silhouettes = silhouettes_input;
+        projectionMatrices = p_Matrices_input;
         size_x = (endPoint(0) - startPoint(0)) / n_x;
         size_y = (endPoint(1) - startPoint(1)) / n_y;
         size_z = (endPoint(2) - startPoint(2)) / n_z;
-        for (int x_idx = 0; x_idx < n_x; x_idx++){
-            for (int y_idx = 0; y_idx < n_y; y_idx++){
-                for (int z_idx = 0; z_idx < n_z; z_idx++){
-                    Eigen::Vector3d centerPoint(x_idx * size_x + startPoint(0), y_idx * size_y + startPoint(1), z_idx * size_z + startPoint(2));
+        for (int x_idx = 0; x_idx < n_x; x_idx++) {
+            for (int y_idx = 0; y_idx < n_y; y_idx++) {
+                for (int z_idx = 0; z_idx < n_z; z_idx++) {
+                    Eigen::Vector3d centerPoint(x_idx * size_x + startPoint(0), y_idx * size_y + startPoint(1),
+                                                z_idx * size_z + startPoint(2));
                     centerPoints.push_back(centerPoint);
                 }
             }
@@ -37,50 +48,53 @@ public:
     }
 
     void writeCenterPoints(std::string fileName, bool color) {
-        std::ofstream outFile(fileName);
+        std::cout << "saving center points in: "<< fileName << std::endl;
+        double timex = static_cast<double>(cv::getTickCount());
+        std::ofstream outFile(fileName, std::ios::binary);
         outFile << "COFF" << std::endl;
 
         outFile << "# numVertices numFaces numEdges" << std::endl;
 
-
-
-        std::cout<<"writing center points"<<std::endl;
-
         if (color) {
             outFile << n_pointWithColor << " " << "0" << " 0" << std::endl;
 
-            for (int idx = 0; idx < n_centerPoints; idx ++){
-                if (pointColor[idx](3) != 0){
-                    outFile << centerPoints[idx][0] << " " << centerPoints[idx][1] << " " << centerPoints[idx][2] << " "
-                            << pointColor[idx](0)<<" "<<pointColor[idx](1)<<" "<<pointColor[idx](2)<<" "<<pointColor[idx](3)<<std::endl;
+            for (int idx = 0; idx < n_pointWithColor; idx++) {
+                if (pointColor[idx](3) != 0) {
+                    outFile << pointWithColor[idx][0] << " " << pointWithColor[idx][1] << " " << pointWithColor[idx][2]
+                            << " "
+                            << pointColor[idx](0) << " " << pointColor[idx](1) << " " << pointColor[idx](2) << " "
+                            << pointColor[idx](3) << std::endl;
                 }
             }
         } else {
             outFile << n_centerPoints << " " << "0" << " 0" << std::endl;
 
-            for (int idx = 0; idx < n_centerPoints; idx ++){
-                outFile << centerPoints[idx][0] << " " << centerPoints[idx][1] << " " << centerPoints[idx][2] << std::endl;
+            for (int idx = 0; idx < n_centerPoints; idx++) {
+                outFile << centerPoints[idx][0] << " " << centerPoints[idx][1] << " " << centerPoints[idx][2]
+                        << std::endl;
             }
         }
-
         outFile.close();
+        timex = ((double) cv::getTickCount() - timex) / cv::getTickFrequency();
+        std::cout << "time for saving: " << timex << "s" << std::endl;
     }
 
 
     void writeVertices(std::string fileName) {
         getVertices(false);
-        std::ofstream outFile(fileName);
+        std::ofstream outFile(fileName, std::ios::binary);
         outFile << "COFF" << std::endl;
 
         outFile << "# numVertices numFaces numEdges" << std::endl;
 
         outFile << n_vertices << " " << "0" << " 0" << std::endl;
 
-        std::cout<<"writing Vertices"<<std::endl;
+        std::cout << "writing Vertices" << std::endl;
 
-        for (int i = 0; i < allVertices.size(); i ++){
-            for (int j = 0; j < allVertices[i].size(); j ++){
-                outFile << allVertices[i][j][0] << " " << allVertices[i][j][1] << " " << allVertices[i][j][2] << std::endl;
+        for (int i = 0; i < allVertices.size(); i++) {
+            for (int j = 0; j < allVertices[i].size(); j++) {
+                outFile << allVertices[i][j][0] << " " << allVertices[i][j][1] << " " << allVertices[i][j][2]
+                        << std::endl;
             }
         }
         outFile.close();
@@ -89,25 +103,28 @@ public:
     void writeMesh(std::string fileName, bool color) {
         getVertices(color);
         getFaces();
-        std::ofstream outFile(fileName);
+        std::ofstream outFile(fileName, std::ios::binary);
         std::cout << "Writing vertices" << std::endl;
         outFile << "COFF" << std::endl;
 
         outFile << "# numVertices numFaces numEdges" << std::endl;
         outFile << n_vertices << " " << n_faces << " 0" << std::endl;
-        if (color){
-            for (int i = 0; i < allVertices.size(); i ++){
-                for (int j = 0; j < allVertices[i].size(); j ++){
-                    if (pointColor[i](3) != 0){
-                        outFile << allVertices[i][j][0] << " " << allVertices[i][j][1] << " " << allVertices[i][j][2]<< " "
-                                << pointColor[i][0]<<" "<<pointColor[i][1]<<" "<<pointColor[i][2]<<" "<<pointColor[i][3]<<std::endl;
+        if (color) {
+            for (int i = 0; i < allVertices.size(); i++) {
+                for (int j = 0; j < allVertices[i].size(); j++) {
+                    if (pointColor[i](3) != 0) {
+                        outFile << allVertices[i][j][0] << " " << allVertices[i][j][1] << " " << allVertices[i][j][2]
+                                << " "
+                                << pointColor[i][0] << " " << pointColor[i][1] << " " << pointColor[i][2] << " "
+                                << pointColor[i][3] << std::endl;
                     }
                 }
             }
         } else {
-            for (int i = 0; i < allVertices.size(); i ++){
-                for (int j = 0; j < allVertices[i].size(); j ++){
-                    outFile << allVertices[i][j][0] << " " << allVertices[i][j][1] << " " << allVertices[i][j][2]<<std::endl;
+            for (int i = 0; i < allVertices.size(); i++) {
+                for (int j = 0; j < allVertices[i].size(); j++) {
+                    outFile << allVertices[i][j][0] << " " << allVertices[i][j][1] << " " << allVertices[i][j][2]
+                            << std::endl;
                 }
             }
         }
@@ -121,36 +138,40 @@ public:
         outFile.close();
     }
 
-    void carve(std::vector<cv::Mat> silhouettes, std::vector<cv::Mat> projectionMatrices, int carvingThreshold) {
+    void carve(int carvingThreshold) {
+        double timex = static_cast<double>(cv::getTickCount());
         std::vector<bool> centerPointFlags(centerPoints.size(), true);
-        std::cout<<"Carving"<<std::endl;
+        std::cout << "Carving" << std::endl;
 //        for (int imageIdx = 0; imageIdx < silhouettes.size(); imageIdx++) {
 //            std::cout<<"Carving: processing image ["<<imageIdx + 1<<"/"<<silhouettes.size()<<"]"<<std::endl;
-            for (int pointIdx = 0; pointIdx < centerPoints.size(); pointIdx++) {
-                // perform only to points that are retained from last iteration to save resource
-                if (centerPointFlags[pointIdx]) {
-                    // mark all points with projection outside silhouette
+        for (int pointIdx = 0; pointIdx < centerPoints.size(); pointIdx++) {
+            // perform only to points that are retained from last iteration to save resource
+            if (centerPointFlags[pointIdx]) {
+                // mark all points with projection outside silhouette
 //                    Eigen::Vector2i imagePoint = projection(projectionMatrices[imageIdx], centerPoints[pointIdx]);
 //                    centerPointFlags[pointIdx] = inSilhouette(imagePoint, silhouettes[imageIdx]);
-                    centerPointFlags[pointIdx] = visibliity(centerPoints[pointIdx], projectionMatrices, silhouettes, carvingThreshold);
-                }
+                centerPointFlags[pointIdx] = visibility(centerPoints[pointIdx], carvingThreshold);
             }
+        }
 //        }
         std::vector<Eigen::Vector3d> remainedPoints;
 
-        for (int i = 0; i< centerPoints.size(); i++) {
+        for (int i = 0; i < centerPoints.size(); i++) {
             if (centerPointFlags[i]) {
                 remainedPoints.push_back(centerPoints[i]);
             }
         }
         centerPoints = remainedPoints;
         n_centerPoints = centerPoints.size();
-        std::cout<<"Carving done"<<std::endl;
+        std::cout << "Carving done" << std::endl;
+        timex = ((double) cv::getTickCount() - timex) / cv::getTickFrequency();
+        std::cout << "time for carving: " << timex << "s" << std::endl;
     }
 
-    void colorRender(std::vector<cv::Mat> projectionMatrices, std::vector<cv::Mat> images, int colorThreshold) {
-        std::cout<<"start retrieving color information"<<std::endl;
-        Eigen::Vector4i colorInitial(0,0,0,0);
+    void colorRender(int colorThreshold) {
+        std::cout << "start retrieving color information" << std::endl;
+        double timex = static_cast<double>(cv::getTickCount());
+        Eigen::Vector4i colorInitial(0, 0, 0, 0);
         std::vector<Eigen::Vector4i> colorTemp(centerPoints.size(), colorInitial);
         for (int imageIdx = 0; imageIdx < images.size(); imageIdx++) {
             int nextImageIdx = imageIdx + 1;
@@ -158,19 +179,21 @@ public:
                 nextImageIdx = 0;
             }
             for (int pointIdx = 0; pointIdx < centerPoints.size(); pointIdx++) {
-                Eigen::Vector2i imagePoint = projection(projectionMatrices[imageIdx], centerPoints[pointIdx]);
-                Eigen::Vector2i nextImagePoint = projection(projectionMatrices[nextImageIdx], centerPoints[pointIdx]);
-                if (colorConsistency(images, imagePoint, nextImagePoint, imageIdx, nextImageIdx, colorThreshold) && colorTemp[pointIdx](3) == 0 ) {
+                Eigen::Vector2i imagePoint = projection(projectionMatrices[imageIdx],centerPoints[pointIdx]);
+                Eigen::Vector2i nextImagePoint = projection(projectionMatrices[nextImageIdx],centerPoints[pointIdx]);
+                if (colorConsistency(imagePoint, nextImagePoint, imageIdx, nextImageIdx, colorThreshold) &&
+                    colorTemp[pointIdx](3) == 0) {
                     int B = images[imageIdx].at<cv::Vec3b>(imagePoint(1), imagePoint(0))[0];
                     int G = images[imageIdx].at<cv::Vec3b>(imagePoint(1), imagePoint(0))[1];
                     int R = images[imageIdx].at<cv::Vec3b>(imagePoint(1), imagePoint(0))[2];
                     int A = 255;
-
                     Eigen::Vector4i color(R, G, B, A);
                     colorTemp[pointIdx] = color;
                 }
             }
         }
+        timex = ((double) cv::getTickCount() - timex) / cv::getTickFrequency();
+        std::cout << "time for rendering: " << timex << "s" << std::endl;
         for (int i = 0; i < colorTemp.size(); i++) {
             if (colorTemp[i](3) != 0) {
                 pointWithColor.push_back(centerPoints[i]);
@@ -178,6 +201,8 @@ public:
             }
         }
         n_pointWithColor = pointWithColor.size();
+        std::cout << "color information retrieved" << std::endl;
+
     }
 
 
@@ -188,23 +213,27 @@ private:
     std::vector<std::vector<Eigen::Vector3d>> allVertices;
     std::vector<std::string> faces;
 
-    int distance(std::vector<cv::Mat> images, Eigen::Vector2i imagePoint1, Eigen::Vector2i imagePoint2, int imageIdx1, int imageIdx2)
-    {
-        int distanceB = images[imageIdx1].at<cv::Vec3b>(imagePoint1(1),imagePoint1(0))[0] - images[imageIdx2].at<cv::Vec3b>(imagePoint2(1),imagePoint2(0))[0];
-        int distanceG = images[imageIdx1].at<cv::Vec3b>(imagePoint1(1),imagePoint1(0))[1] - images[imageIdx2].at<cv::Vec3b>(imagePoint2(1),imagePoint2(0))[1];
-        int distanceR = images[imageIdx1].at<cv::Vec3b>(imagePoint1(1),imagePoint1(0))[2] - images[imageIdx2].at<cv::Vec3b>(imagePoint2(1),imagePoint2(0))[2];
-        int distance= distanceB * distanceB + distanceG * distanceG + distanceR * distanceR;
+    int distance(Eigen::Vector2i imagePoint1, Eigen::Vector2i imagePoint2, int imageIdx1,
+                 int imageIdx2) {
+        int distanceB = images[imageIdx1].at<cv::Vec3b>(imagePoint1(1), imagePoint1(0))[0] -
+                        images[imageIdx2].at<cv::Vec3b>(imagePoint2(1), imagePoint2(0))[0];
+        int distanceG = images[imageIdx1].at<cv::Vec3b>(imagePoint1(1), imagePoint1(0))[1] -
+                        images[imageIdx2].at<cv::Vec3b>(imagePoint2(1), imagePoint2(0))[1];
+        int distanceR = images[imageIdx1].at<cv::Vec3b>(imagePoint1(1), imagePoint1(0))[2] -
+                        images[imageIdx2].at<cv::Vec3b>(imagePoint2(1), imagePoint2(0))[2];
+        int distance = distanceB * distanceB + distanceG * distanceG + distanceR * distanceR;
         return distance;
     }
 
-    bool colorConsistency(std::vector<cv::Mat> images ,Eigen::Vector2i imagePoint1, Eigen::Vector2i imagePoint2, int imageIdx1, int imageIdx2, int threshold) {
-        if (distance(images, imagePoint1, imagePoint2, imageIdx1, imageIdx2) <= threshold){
+    bool colorConsistency(Eigen::Vector2i imagePoint1, Eigen::Vector2i imagePoint2,
+                          int imageIdx1, int imageIdx2, int threshold) {
+        if (distance(imagePoint1, imagePoint2, imageIdx1, imageIdx2) <= threshold) {
             return true;
         }
         return false;
     }
 
-    void getFaces(){
+    void getFaces() {
         for (int i = 0; i < allVertices.size(); i++) {
             int idx0 = i * 8;
             int idx1 = idx0 + 1;
@@ -259,28 +288,28 @@ private:
         if (color) {
             for (int i = 0; i < pointWithColor.size(); i++) {
                 vertices.clear();
-                vertices.push_back(pointWithColor[i] + Eigen::Vector3d(-size_x/2,-size_y/2,-size_z/2));
-                vertices.push_back(pointWithColor[i] + Eigen::Vector3d(+size_x/2,-size_y/2,-size_z/2));
-                vertices.push_back(pointWithColor[i] + Eigen::Vector3d(+size_x/2,+size_y/2,-size_z/2));
-                vertices.push_back(pointWithColor[i] + Eigen::Vector3d(-size_x/2,+size_y/2,-size_z/2));
-                vertices.push_back(pointWithColor[i] + Eigen::Vector3d(-size_x/2,-size_y/2,+size_z/2));
-                vertices.push_back(pointWithColor[i] + Eigen::Vector3d(+size_x/2,-size_y/2,+size_z/2));
-                vertices.push_back(pointWithColor[i] + Eigen::Vector3d(+size_x/2,+size_y/2,+size_z/2));
-                vertices.push_back(pointWithColor[i] + Eigen::Vector3d(-size_x/2,+size_y/2,+size_z/2));
+                vertices.push_back(pointWithColor[i] + Eigen::Vector3d(-size_x / 2, -size_y / 2, -size_z / 2));
+                vertices.push_back(pointWithColor[i] + Eigen::Vector3d(+size_x / 2, -size_y / 2, -size_z / 2));
+                vertices.push_back(pointWithColor[i] + Eigen::Vector3d(+size_x / 2, +size_y / 2, -size_z / 2));
+                vertices.push_back(pointWithColor[i] + Eigen::Vector3d(-size_x / 2, +size_y / 2, -size_z / 2));
+                vertices.push_back(pointWithColor[i] + Eigen::Vector3d(-size_x / 2, -size_y / 2, +size_z / 2));
+                vertices.push_back(pointWithColor[i] + Eigen::Vector3d(+size_x / 2, -size_y / 2, +size_z / 2));
+                vertices.push_back(pointWithColor[i] + Eigen::Vector3d(+size_x / 2, +size_y / 2, +size_z / 2));
+                vertices.push_back(pointWithColor[i] + Eigen::Vector3d(-size_x / 2, +size_y / 2, +size_z / 2));
                 allVertices.push_back(vertices);
             }
             n_vertices = allVertices.size() * 8;
         } else {
             for (int i = 0; i < centerPoints.size(); i++) {
                 vertices.clear();
-                vertices.push_back(centerPoints[i] + Eigen::Vector3d(-size_x/2,-size_y/2,-size_z/2));
-                vertices.push_back(centerPoints[i] + Eigen::Vector3d(+size_x/2,-size_y/2,-size_z/2));
-                vertices.push_back(centerPoints[i] + Eigen::Vector3d(+size_x/2,+size_y/2,-size_z/2));
-                vertices.push_back(centerPoints[i] + Eigen::Vector3d(-size_x/2,+size_y/2,-size_z/2));
-                vertices.push_back(centerPoints[i] + Eigen::Vector3d(-size_x/2,-size_y/2,+size_z/2));
-                vertices.push_back(centerPoints[i] + Eigen::Vector3d(+size_x/2,-size_y/2,+size_z/2));
-                vertices.push_back(centerPoints[i] + Eigen::Vector3d(+size_x/2,+size_y/2,+size_z/2));
-                vertices.push_back(centerPoints[i] + Eigen::Vector3d(-size_x/2,+size_y/2,+size_z/2));
+                vertices.push_back(centerPoints[i] + Eigen::Vector3d(-size_x / 2, -size_y / 2, -size_z / 2));
+                vertices.push_back(centerPoints[i] + Eigen::Vector3d(+size_x / 2, -size_y / 2, -size_z / 2));
+                vertices.push_back(centerPoints[i] + Eigen::Vector3d(+size_x / 2, +size_y / 2, -size_z / 2));
+                vertices.push_back(centerPoints[i] + Eigen::Vector3d(-size_x / 2, +size_y / 2, -size_z / 2));
+                vertices.push_back(centerPoints[i] + Eigen::Vector3d(-size_x / 2, -size_y / 2, +size_z / 2));
+                vertices.push_back(centerPoints[i] + Eigen::Vector3d(+size_x / 2, -size_y / 2, +size_z / 2));
+                vertices.push_back(centerPoints[i] + Eigen::Vector3d(+size_x / 2, +size_y / 2, +size_z / 2));
+                vertices.push_back(centerPoints[i] + Eigen::Vector3d(-size_x / 2, +size_y / 2, +size_z / 2));
                 allVertices.push_back(vertices);
             }
             n_vertices = allVertices.size() * 8;
@@ -288,14 +317,23 @@ private:
     }
 
     // project a 3D point into image coordinates
-    Eigen::Vector2i projection(cv::Mat projectionMatrix, Eigen::Vector3d centerPoint){
-        Eigen::MatrixXd p_Matrix;
-        Eigen::Vector4d centerPoint4d;
-        centerPoint4d<<centerPoint, 1;
-        cv::cv2eigen(projectionMatrix, p_Matrix);
-        Eigen::Vector3d temp = p_Matrix * centerPoint4d;
+    Eigen::Vector2i projection(cv::Mat projectionMatrix ,Eigen::Vector3d centerPoint) {
         Eigen::Vector2i imagePoint;
-        imagePoint<<temp(0) / temp(2), temp(1) / temp(2);
+        double z = projectionMatrix.at<double>(2, 0) * centerPoint[0] +
+                   projectionMatrix.at<double>(2, 1) * centerPoint[1] +
+                   projectionMatrix.at<double>(2, 2) * centerPoint[2] +
+                   projectionMatrix.at<double>(2, 3);
+
+        imagePoint[0] = (projectionMatrix.at<double>(0, 0) * centerPoint[0] +
+                         projectionMatrix.at<double>(0, 1) * centerPoint[1] +
+                         projectionMatrix.at<double>(0, 2) * centerPoint[2] +
+                         projectionMatrix.at<double>(0, 3)) / z;
+
+        imagePoint[1] = (projectionMatrix.at<double>(1, 0) * centerPoint[0] +
+                         projectionMatrix.at<double>(1, 1) * centerPoint[1] +
+                         projectionMatrix.at<double>(1, 2) * centerPoint[2] +
+                         projectionMatrix.at<double>(1, 3)) / z;
+
         return imagePoint;
     }
 
@@ -311,17 +349,21 @@ private:
         return true;
     }
 
-    bool visibliity(Eigen::Vector3d centerPoint,std::vector<cv::Mat> projectionMatrices, std::vector<cv::Mat> silhouettes, int carvingThreshold) {
+    bool
+    visibility(Eigen::Vector3d centerPoint, int carvingThreshold) {
         int visibility = silhouettes.size();
-        for (int imageIdx = 0; imageIdx < silhouettes.size(); imageIdx ++) {
+        for (int imageIdx = 0; imageIdx < silhouettes.size(); imageIdx++) {
             Eigen::Vector2i imagePoint = projection(projectionMatrices[imageIdx], centerPoint);
             if (imagePoint(0) <= 0 || imagePoint(1) <= 0 ||
-                imagePoint(0) >= silhouettes[imageIdx].size().width || imagePoint(1) >= silhouettes[imageIdx].size().height) {
-                visibility --;
+                imagePoint(0) >= silhouettes[imageIdx].size().width ||
+                imagePoint(1) >= silhouettes[imageIdx].size().height) {
+                visibility--;
+            } else {
+                if (silhouettes[imageIdx].at<uchar>(imagePoint(1), imagePoint(0)) == 0) {
+                    visibility--;
+                }
             }
-            if (silhouettes[imageIdx].at<uchar>(imagePoint(1), imagePoint(0)) == 0) {
-                visibility --;
-            }
+
         }
         if (visibility < silhouettes.size() - carvingThreshold) {
             return false;

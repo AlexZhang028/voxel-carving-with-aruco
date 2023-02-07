@@ -3,5 +3,4 @@
 /.vscode
 /Src/*build*
 /Src/.*
-/OutputData/*.off
-/OutputData/board02-png-22/*.off
+/OutputData/*
