@@ -121,19 +121,21 @@ public:
         outFile.close();
     }
 
-    void carve(std::vector<cv::Mat> silhouettes, std::vector<cv::Mat> projectionMatrices) {
+    void carve(std::vector<cv::Mat> silhouettes, std::vector<cv::Mat> projectionMatrices, int carvingThreshold) {
         std::vector<bool> centerPointFlags(centerPoints.size(), true);
-        for (int imageIdx = 0; imageIdx < silhouettes.size(); imageIdx++) {
-            std::cout<<"Carving: processing image ["<<imageIdx + 1<<"/"<<silhouettes.size()<<"]"<<std::endl;
+        std::cout<<"Carving"<<std::endl;
+//        for (int imageIdx = 0; imageIdx < silhouettes.size(); imageIdx++) {
+//            std::cout<<"Carving: processing image ["<<imageIdx + 1<<"/"<<silhouettes.size()<<"]"<<std::endl;
             for (int pointIdx = 0; pointIdx < centerPoints.size(); pointIdx++) {
                 // perform only to points that are retained from last iteration to save resource
                 if (centerPointFlags[pointIdx]) {
                     // mark all points with projection outside silhouette
-                    Eigen::Vector2i imagePoint = projection(projectionMatrices[imageIdx], centerPoints[pointIdx]);
-                    centerPointFlags[pointIdx] = inSilhouette(imagePoint, silhouettes[imageIdx]);
+//                    Eigen::Vector2i imagePoint = projection(projectionMatrices[imageIdx], centerPoints[pointIdx]);
+//                    centerPointFlags[pointIdx] = inSilhouette(imagePoint, silhouettes[imageIdx]);
+                    centerPointFlags[pointIdx] = visibliity(centerPoints[pointIdx], projectionMatrices, silhouettes, carvingThreshold);
                 }
             }
-        }
+//        }
         std::vector<Eigen::Vector3d> remainedPoints;
 
         for (int i = 0; i< centerPoints.size(); i++) {
@@ -143,9 +145,10 @@ public:
         }
         centerPoints = remainedPoints;
         n_centerPoints = centerPoints.size();
+        std::cout<<"Carving done"<<std::endl;
     }
 
-    void colorRender(std::vector<cv::Mat> projectionMatrices, std::vector<cv::Mat> images, int threshold) {
+    void colorRender(std::vector<cv::Mat> projectionMatrices, std::vector<cv::Mat> images, int colorThreshold) {
         std::cout<<"start retrieving color information"<<std::endl;
         Eigen::Vector4i colorInitial(0,0,0,0);
         std::vector<Eigen::Vector4i> colorTemp(centerPoints.size(), colorInitial);
@@ -157,7 +160,7 @@ public:
             for (int pointIdx = 0; pointIdx < centerPoints.size(); pointIdx++) {
                 Eigen::Vector2i imagePoint = projection(projectionMatrices[imageIdx], centerPoints[pointIdx]);
                 Eigen::Vector2i nextImagePoint = projection(projectionMatrices[nextImageIdx], centerPoints[pointIdx]);
-                if (colorConsistency(images, imagePoint, nextImagePoint, imageIdx, nextImageIdx, threshold) && colorTemp[pointIdx](3) == 0 ) {
+                if (colorConsistency(images, imagePoint, nextImagePoint, imageIdx, nextImageIdx, colorThreshold) && colorTemp[pointIdx](3) == 0 ) {
                     int B = images[imageIdx].at<cv::Vec3b>(imagePoint(1), imagePoint(0))[0];
                     int G = images[imageIdx].at<cv::Vec3b>(imagePoint(1), imagePoint(0))[1];
                     int R = images[imageIdx].at<cv::Vec3b>(imagePoint(1), imagePoint(0))[2];
@@ -286,7 +289,6 @@ private:
 
     // project a 3D point into image coordinates
     Eigen::Vector2i projection(cv::Mat projectionMatrix, Eigen::Vector3d centerPoint){
-        //in progress
         Eigen::MatrixXd p_Matrix;
         Eigen::Vector4d centerPoint4d;
         centerPoint4d<<centerPoint, 1;
@@ -304,6 +306,24 @@ private:
             return false;
         }
         if (silhouette.at<uchar>(imagePoint(1), imagePoint(0)) == 0) {
+            return false;
+        }
+        return true;
+    }
+
+    bool visibliity(Eigen::Vector3d centerPoint,std::vector<cv::Mat> projectionMatrices, std::vector<cv::Mat> silhouettes, int carvingThreshold) {
+        int visibility = silhouettes.size();
+        for (int imageIdx = 0; imageIdx < silhouettes.size(); imageIdx ++) {
+            Eigen::Vector2i imagePoint = projection(projectionMatrices[imageIdx], centerPoint);
+            if (imagePoint(0) <= 0 || imagePoint(1) <= 0 ||
+                imagePoint(0) >= silhouettes[imageIdx].size().width || imagePoint(1) >= silhouettes[imageIdx].size().height) {
+                visibility --;
+            }
+            if (silhouettes[imageIdx].at<uchar>(imagePoint(1), imagePoint(0)) == 0) {
+                visibility --;
+            }
+        }
+        if (visibility < silhouettes.size() - carvingThreshold) {
             return false;
         }
         return true;

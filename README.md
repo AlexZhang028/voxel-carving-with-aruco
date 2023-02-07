@@ -115,18 +115,19 @@ Thisfunction write all vertices as point cloud in a .off file and only used for 
 - `bool color`: flag to determine if the color information is preserved.
 This function write the whole mesh (vertices and surface) in a .off file.
 
-`void carve(std::vector<cv::Mat> silhouettes, std::vector<cv::Mat> projectionMatrices)`
+`void carve(std::vector<cv::Mat> silhouettes, std::vector<cv::Mat> projectionMatrices, int carvingThreshold)`
 
 - `std::vector<cv::Mat> silhouettes`: all silhouettes used for carving.
 - `std::vector<cv::Mat> projectionMatrices)`: all projection matrices used for carving.
+- `int carvingThreshold`: controls a voxel should be visible by how many images. if it's set to 0, then the function performs a normal voxel carving.
 This function does the carving process with input of silhouettes and projection matrices.
 
-`void colorRender(std::vector<cv::Mat> projectionMatrices, std::vector<cv::Mat> images, int threshold)`
+`void colorRender(std::vector<cv::Mat> projectionMatrices, std::vector<cv::Mat> images, int colorThreshold)`
 
 - `std::vector<cv::Mat> projectionMatrices)`: all projection matrices used for carving.
 This function does the carving process with input of silhouettes and projection matrices.
 - `std::vector<cv::Mat> images`: input images.
-- `int threshold`: controls the color consistency of a point in 2 images.
+- `int colorThreshold`: controls the color consistency of a point in 2 images.
 This function retrieves the color information from original input images.
 
 ---

@@ -53,10 +53,10 @@ int main()
     Eigen::Vector3d endPoint(0.125,0.177,0.003);
     int n = 100;
     Voxel space(n,n,n, startPoint, endPoint);
-    space.carve(images.silhouettes,images.p_Matrices);
+    space.carve(images.silhouettes,images.p_Matrices,1);
     space.colorRender(images.p_Matrices, images.images, 3);
 //    space.writeCenterPoints(outputDataDir + "Iter_0_c.off", true);
-    space.writeMesh(outputDataDir + "iter_0_c_voxel.off", true);
-    std::cout<<space.n_centerPoints<<" "<<space.n_vertices<<" "<<space.n_faces<<std::endl;
+    space.writeMesh(outputDataDir + "iter_0_c_voxel_thres1.off", true);
+//    std::cout<<space.n_centerPoints<<" "<<space.n_vertices<<" "<<space.n_faces<<std::endl;
     return 0;
 }
