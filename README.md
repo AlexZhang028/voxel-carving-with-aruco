@@ -34,10 +34,13 @@ Contains the Class `MultiImage`, which takes an input of file name list and cali
 
 ### Initialize
 
-`MultiImage::MultiImage(std::vector<std::string> fileNames, int dilateIteration)`
+`MultiImage::MultiImage(std::vector<std::string> fileNames, int erodeIter, int dilateIter, cv::Scalar hsv_min, cv::Scalar hsv_max)`
 
 - `fileNames`: complete path of input images
-- `dialteIteration`: the iteration number of dialte when getting silhouettes
+- `erodeIter`: the iteration number of erode when getting silhouettes
+- `dialteIter`: the iteration number of dialte when getting silhouettes
+- `hsv_min`: the min hsv value when getting silhouettes
+- `hsv_max`: the max hsv value when getting silhouettes
 
 After initialize the class, the silhouette and projection matrix are automatically computed and stored in public variables.
 
@@ -69,13 +72,16 @@ Contains the Class `Voxel`, which voxelize the space for carving and visulizatio
 
 ### Initialization
 
-`Voxel(int n_x, int n_y, int n_z, Eigen::Vector3d startPoint, Eigen::Vector3d endPoint)`
+`Voxel(int n_x, int n_y, int n_z, Eigen::Vector3d startPoint, Eigen::Vector3d endPoint, std::vector<cv::Mat> images_input, std::vector<cv::Mat> silhouettes_input, std::vector<cv::Mat> p_Matrices_input)`
 
 - `int n_x`: number of voxels in x direction.
 - `int n_y`: number of voxels in y direction.
 - `int n_z`: number of voxels in z direction.
 - `Eigen::Vector3d startPoint`: start point of bounding box (space to be voxelized)
 - `Eigen::Vector3d endPoint)`: end point of bounding box (space to be voxelized)
+- `images_input`: input images for carving
+- `silhouettes_input`: input silhouettes for carving
+- `p_Matrices_input`: input projection matrices for carving
 This method discretize a specific area of workspace (bounding box) into given numbers of voxels.
 
 `Voxel::Voxel(std::vector<Eigen::Vector3d> centerPoints_input, double size_x_input, double size_y_input, double size_z_input)` (only for debugging)
