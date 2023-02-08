@@ -18,6 +18,16 @@
   <p>left: one of the input images; right: output 3D model (0 iteration, carvingThreshold 0, colorThreshold 3)</p>
 </div>
 
+<div align=center>
+  <img src=https://github.com/ge35tay/AR_Marker_and_Voxel_Carving/blob/HaifanZhang/InputData/USS_Enterprise_H/IMG_1484.JPG width = 50%><img src=https://github.com/ge35tay/AR_Marker_and_Voxel_Carving/blob/HaifanZhang/InputData/USS_Enterprise_H/snapshot00.png width = 50%>
+  <p>left: one of the input images; right: output 3D model</p>
+</div>
+
+<div align=center>
+  <img src=https://github.com/ge35tay/AR_Marker_and_Voxel_Carving/blob/HaifanZhang/InputData/USS_Enterprise_V/IMG_1522.jpg width = 50%><img src=https://github.com/ge35tay/AR_Marker_and_Voxel_Carving/blob/HaifanZhang/InputData/USS_Enterprise_V/snapshot01.png width = 50%>
+  <p>left: one of the input images; right: output 3D model</p>
+</div>
+
 ## Build project
 
 ### Requirments
@@ -39,6 +49,7 @@ A small tool which gives a instant feed back when playing around with HSV range.
 ### Usage
 
 place in the same directory as the image files and then run command below in terminal:
+
 `python HSV_mask.py -f fileName`
 
 ## `multiImage.h`
