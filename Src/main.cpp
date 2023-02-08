@@ -34,19 +34,6 @@ void saveImages(std::string dstDir, std::vector<cv::Mat> images) {
     }
 }
 
-cv::Mat rgbRange(cv::Mat image, int black_max, int white_min) {
-    cv::Mat blackMask, whiteMask, mask;
-    cv::Scalar blackMin(0, 0, 0);
-    cv::Scalar blackMax(black_max, black_max, black_max);
-    cv::Scalar whiteMin(white_min, white_min, white_min);
-    cv::Scalar whiteMax(255, 255, 255);
-    cv::inRange(image, blackMin, blackMax, blackMask);
-    cv::inRange(image, whiteMin, whiteMax, whiteMask);
-    cv::bitwise_or(blackMask, whiteMask, mask);
-    cv::bitwise_not(mask, mask);
-    return mask;
-}
-
 int main()
 {
     // define file path
@@ -79,16 +66,6 @@ int main()
     space.writeMesh(outputDataDir + "iter_v_1b.off", true);
     std::cout<<space.n_pointWithColor<<" "<<space.n_vertices<<" "<<space.n_faces<<std::endl;
 
-
-//    cv::Mat image = cv::imread("e:/documents/3D-Scanning/InputData/01/IMG_1398.JPG");
-//    cv::resize(image,image,cv::Size(960,720));
-//    cv::Mat mask = rgbRange(image,70,245);
-//    cv::Mat mask2;
-//    cv::inRange(image,cv::Scalar(0,155,0), cv::Scalar(255,255,255),mask2);
-//    cv::bitwise_not(mask2,mask2);
-//    cv::bitwise_and(mask, mask2, mask2);
-//    cv::imshow("mask", mask2);
-//    cv::waitKey(0);
 
     return 0;
 }
