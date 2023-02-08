@@ -11,7 +11,7 @@ public:
     std::vector<cv::Mat> images, cameraPoses, silhouettes, foregrounds, p_Matrices;
 
     // Marker detection, camera calibration while creating the class
-    MultiImage(std::vector<std::string> fileNames, int erodeIter, int dilateIter, cv::Scalar hsv_min, cv::Scalar hsv_max) {
+    MultiImage(std::vector<std::string> fileNames, int erodeIter, int dilateIter, cv::Scalar hsv_min, cv::Scalar hsv_max, int black_max, int white_min, bool flipHSVMask) {
         dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
         board = new cv::aruco::GridBoard(cv::Size(5,7),0.035,0.005,dictionary);
         cv::aruco::ArucoDetector detector(dictionary, detectorParams);
@@ -33,7 +33,7 @@ public:
                 images[0].size(), intrinsicMatrix, distCoeffs,
                 rvecs, tvecs,stdDeviationsIntrinsics, stdDeviationsExtrinsics, perViewErrors, calibrationFlags);
         getProjectionMatrices();
-        getSilhouettes(erodeIter, dilateIter, hsv_min, hsv_max);
+        getSilhouettes(erodeIter, dilateIter, hsv_min, hsv_max, black_max, white_min, flipHSVMask);
     }
 
     cv::Mat getImageWithMarker(int index) {
@@ -89,15 +89,33 @@ private:
         }
     }
 
-    void getSilhouettes(int erodeIter, int dilateIter, cv::Scalar hsv_min, cv::Scalar hsv_max) {
+    void getSilhouettes(int erodeIter, int dilateIter, cv::Scalar hsv_min, cv::Scalar hsv_max, int black_max, int white_min, bool flipHSVMask) {
         cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT,cv::Size(3,3));
         for (int i = 0; i < images.size(); i++) {
-            cv::Mat hsv, mask, erode, silhouette;
+            cv::Mat hsv, erode, silhouette, mask;
             cv::cvtColor(images[i], hsv, cv::COLOR_BGR2HSV);
             cv::inRange(hsv, hsv_min, hsv_max,mask);
+            if (flipHSVMask) cv::bitwise_not(mask, mask);
+            cv::Mat bwMask = rgbRange(images[i], black_max, white_min);
+            cv::bitwise_and(mask, bwMask, mask);
             cv::erode(mask,erode, kernel, cv::Point(-1,-1),erodeIter);
             cv::dilate(erode,silhouette, kernel, cv::Point(-1,-1),dilateIter);
             silhouettes.push_back(silhouette);
         }
+    }
+
+    cv::Mat rgbRange(cv::Mat image, int black_max, int white_min) {
+        cv::Mat blackMask, whiteMask, greenMask, mask;
+        cv::Scalar blackMin(0, 0, 0);
+        cv::Scalar blackMax(black_max, black_max, black_max);
+        cv::Scalar whiteMin(white_min, white_min, white_min);
+        cv::Scalar whiteMax(255, 255, 255);
+        cv::inRange(image, blackMin, blackMax,blackMask);
+        cv::inRange(image, whiteMin, whiteMax, whiteMask);
+        cv::bitwise_or(blackMask,whiteMask, mask);
+//        cv::inRange(image,cv::Scalar(0,180,0), cv::Scalar(255,255,255),greenMask);
+//        cv::bitwise_or(mask, greenMask, mask);
+        cv::bitwise_not(mask, mask);
+        return mask;
     }
 };

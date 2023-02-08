@@ -28,19 +28,35 @@ source code and `CMakeLists.txt` are in `Src` folder, OpenCV path is set with ab
 
 ---
 
+## `HSV_mask.py`
+
+A small tool which gives a instant feed back when playing around with HSV range. Very helpful when creating HSV mask.
+
+### Requirements
+- opencv for python
+- numpy
+
+### Usage
+
+place in the same directory as the image files and then run command below in terminal:
+`python HSV_mask.py -f fileName`
+
 ## `multiImage.h`
 
 Contains the Class `MultiImage`, which takes an input of file name list and calibrate the camera based on multiple image.
 
 ### Initialize
 
-`MultiImage::MultiImage(std::vector<std::string> fileNames, int erodeIter, int dilateIter, cv::Scalar hsv_min, cv::Scalar hsv_max)`
+`MultiImage::MultiImage(std::vector<std::string> fileNames, int erodeIter, int dilateIter, cv::Scalar hsv_min, cv::Scalar hsv_max, int black_max, int white_min, bool flipHSVMask)`
 
 - `fileNames`: complete path of input images
 - `erodeIter`: the iteration number of erode when getting silhouettes
 - `dialteIter`: the iteration number of dialte when getting silhouettes
 - `hsv_min`: the min hsv value when getting silhouettes
 - `hsv_max`: the max hsv value when getting silhouettes
+- `black_max`: thresholding the max RGB value to remove black pixels
+- `white_min`: thresholding the min RGB value to remove white pixels
+- `flipHSVMask`: controls whether to flip HSVMask (set for true to remove green background)
 
 After initialize the class, the silhouette and projection matrix are automatically computed and stored in public variables.
 
