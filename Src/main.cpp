@@ -37,17 +37,19 @@ void saveImages(std::string dstDir, std::vector<cv::Mat> images) {
 int main()
 {
     // define file path
-    std::string inputDataDir = "e:/documents/3D-Scanning/InputData/05/";
-    std::string outputDataDir = "e:/documents/3D-Scanning/OutputData/05/";
+    std::string inputDataDir = "e:/documents/3D-Scanning/InputData/board02-shitou-36/";
+    std::string outputDataDir = "e:/documents/3D-Scanning/OutputData/board02-shitou-36/";
     // read image path
     std::vector<std::string> fileNames;
     readTXT(inputDataDir, fileNames);
     // create MultiImage class, get all information
-    cv::Scalar hsv_min(44,95,40);
-    cv::Scalar hsv_max(57,203,255);
+    cv::Scalar hsv_min(0,0,16);
+    cv::Scalar hsv_max(177,100,136);
     int erodeIter = 0;
-    int dilateIter = 2;
-    MultiImage images(fileNames, erodeIter, dilateIter, hsv_min, hsv_max, 25, 245, true);
+    int dilateIter = 1;
+    MultiImage images(fileNames, erodeIter, dilateIter, hsv_min, hsv_max, 0, 0, false);
+
+
 //    cv::imshow("01",images.silhouettes[0]);
 //    cv::waitKey(0);
     saveImages(outputDataDir,images.silhouettes);
@@ -58,12 +60,12 @@ int main()
 //    bounding box for stone
     Eigen::Vector3d startPoint(0.08,0.11,-0.065);
     Eigen::Vector3d endPoint(0.13,0.16,0);
-    int n = 500;
+    int n = 256;
     Voxel space(n,n,n, startPoint, endPoint, images.images, images.silhouettes, images.p_Matrices);
     space.carve(0);
     space.colorRender(3);
-    space.writeCenterPoints(outputDataDir + "test3.off", true);
-    space.writeMesh(outputDataDir + "iter_v_1b.off", true);
+    space.writeCenterPoints(outputDataDir + "test4.off", true);
+//    space.writeMesh(outputDataDir + "iter_v_1b.off", true);
     std::cout<<space.n_pointWithColor<<" "<<space.n_vertices<<" "<<space.n_faces<<std::endl;
 
 

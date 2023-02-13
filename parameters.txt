@@ -1,8 +1,11 @@
 Ear pods:
 hsv_min = (0,100,100)
 hsv_max = (180,255,255)
+flipHSVMask = false
 erodeIter = 0
 dilateIter = 0
+black_max = 0
+white_min = 255
 startPoint = (0.067,0.095,-0.033)
 endPoint = (0.125,0.177,0.003)
 
@@ -11,21 +14,38 @@ endPoint = (0.125,0.177,0.003)
 stone:
 hsv_min = (0,0,16)
 hsv_max = (177,100,136)
+flipHSVMask = false
 erodeIter = 0
 dilateIter = 1
+black_max = 0
+white_min = 255
 startPoint = (0.0626,0.1118,-0.0388)
 endPoint = (0.1190,0.1598,0)
 
 ---
 
-USS Enterprise:
+USS Enterprise H:
 
 hsv_min = (44,95,40)
 hsv_max = (57,203,255)
-(hsvMask bitwise not)
+flipHSVMask = true
 erodeIter = 0
 dilateIter = 2
 black_max = 25
 white_min = 245
 startPoint(0.07,0.08,-0.04)
 endPoint(0.13,0.17,0)
+
+---
+
+USS Enterprise V:
+
+hsv_min = (44,95,40)
+hsv_max = (57,203,255)
+flipHSVMask = true
+erodeIter = 0
+dilateIter = 2
+black_max = 25
+white_min = 245
+startPoint(0.08,0.11,-0.065)
+endPoint(0.13,0.16,0)

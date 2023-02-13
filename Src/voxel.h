@@ -27,9 +27,9 @@ public:
     // n_x: number of voxels in x direction, size_x: size of a single voxel in x direction (length)
     Voxel(int n_x, int n_y, int n_z,
           Eigen::Vector3d startPoint, Eigen::Vector3d endPoint,
-          std::vector<cv::Mat> images_input,
-          std::vector<cv::Mat> silhouettes_input,
-          std::vector<cv::Mat> p_Matrices_input) {
+          std::vector<cv::Mat> &images_input,
+          std::vector<cv::Mat> &silhouettes_input,
+          std::vector<cv::Mat> &p_Matrices_input) {
         images = images_input;
         silhouettes = silhouettes_input;
         projectionMatrices = p_Matrices_input;
@@ -101,6 +101,8 @@ public:
     }
 
     void writeMesh(std::string fileName, bool color) {
+        std::cout << "saving voxels in: "<< fileName << std::endl;
+        double timex = static_cast<double>(cv::getTickCount());
         getVertices(color);
         getFaces();
         std::ofstream outFile(fileName, std::ios::binary);
@@ -136,6 +138,8 @@ public:
             outFile << faces[idx] << std::endl;
         }
         outFile.close();
+        timex = ((double) cv::getTickCount() - timex) / cv::getTickFrequency();
+        std::cout << "time for saving: " << timex << "s" << std::endl;
     }
 
     void carve(int carvingThreshold) {
