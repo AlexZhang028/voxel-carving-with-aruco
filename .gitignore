@@ -4,3 +4,5 @@
 /Src/*build*
 /Src/.*
 /OutputData/*
+*.zip
+*.xlsx

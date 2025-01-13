@@ -82,6 +82,7 @@ private:
             cv::Mat rotationMatrix;
             cv::Rodrigues(rvecs[i], rotationMatrix);
             cv::hconcat(rotationMatrix, tvecs[i], rt_Matrix);
+//            cv::Mat rt_Inverse = rt_Matrix.inv();
             cv::vconcat(rt_Matrix,lastLine, cameraPose);
             p_Matrix = intrinsicMatrix * rt_Matrix;
             cameraPoses.push_back(cameraPose);

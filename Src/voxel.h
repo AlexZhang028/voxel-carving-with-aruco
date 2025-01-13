@@ -50,7 +50,7 @@ public:
     void writeCenterPoints(std::string fileName, bool color) {
         std::cout << "saving center points in: "<< fileName << std::endl;
         double timex = static_cast<double>(cv::getTickCount());
-        std::ofstream outFile(fileName, std::ios::binary);
+        std::ofstream outFile(fileName);
         outFile << "COFF" << std::endl;
 
         outFile << "# numVertices numFaces numEdges" << std::endl;

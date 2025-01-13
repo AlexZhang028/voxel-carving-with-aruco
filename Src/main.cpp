@@ -52,14 +52,14 @@ int main()
 
 //    cv::imshow("01",images.silhouettes[0]);
 //    cv::waitKey(0);
-    saveImages(outputDataDir,images.silhouettes);
+//    saveImages(outputDataDir,images.silhouettes);
 //    images.extractForeground();
 //    saveImages(outputDataDir+"foreground/iter3/", images.foregrounds);
     // define bounding box
 
 //    bounding box for stone
-    Eigen::Vector3d startPoint(0.08,0.11,-0.065);
-    Eigen::Vector3d endPoint(0.13,0.16,0);
+    Eigen::Vector3d startPoint(0.0626,0.1118,-0.0388);
+    Eigen::Vector3d endPoint(0.1190,0.1598,0);
     int n = 256;
     Voxel space(n,n,n, startPoint, endPoint, images.images, images.silhouettes, images.p_Matrices);
     space.carve(0);
